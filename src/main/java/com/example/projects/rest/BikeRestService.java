@@ -10,16 +10,15 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
 
-@Path("/bike")
+@Path("/bikes")
 @RequestScoped
-public class BikeRestService implements RestServiceInterface{
+public class BikeRestService implements RestServiceInterface {
 
     @Inject
     private BikeService bikeService;
 
     @Override
     @GET
-    @Path("/all")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public List<BikeDto> listAll() {
         return bikeService.findAllOrderedByStationNameDto();
@@ -40,7 +39,6 @@ public class BikeRestService implements RestServiceInterface{
     public BikeDto test(@Valid BikeDto bikeDto) {
         return bikeDto;
     }
-
 
     @GET
     @Path("/yes")

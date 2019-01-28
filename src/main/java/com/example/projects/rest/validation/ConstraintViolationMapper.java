@@ -1,5 +1,4 @@
-package com.example.projects.rest;
-
+package com.example.projects.rest.validation;
 
 import javax.ejb.Singleton;
 import javax.validation.ConstraintViolation;

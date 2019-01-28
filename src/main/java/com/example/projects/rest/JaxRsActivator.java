@@ -5,10 +5,11 @@ package com.example.projects.rest;
  */
 //import org.jboss.resteasy.plugins.interceptors.CorsFilter;
 
+import com.example.projects.rest.validation.ConstraintViolationMapper;
+
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.Set;
 
 @ApplicationPath("/rest")

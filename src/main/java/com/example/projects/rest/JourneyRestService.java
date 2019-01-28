@@ -8,6 +8,8 @@ import com.example.projects.service.StationService;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.Min;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -15,7 +17,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
-@Path("/journey")
+@Path("/journeys")
 @RequestScoped
 public class JourneyRestService {
 
@@ -32,7 +34,6 @@ public class JourneyRestService {
     private Logger log;
 
     @GET
-    @Path("/all")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public List<JourneyDto> listAll() {
         return journeyService.findAllOrderedByIdDto();
@@ -41,14 +42,20 @@ public class JourneyRestService {
     @GET
     @Path("/{id}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public JourneyDto findById(@PathParam("id") long id) {
+    public JourneyDto find(@PathParam("id") long id) {
         return journeyService.findByIdDto(id);
     }
 
     @GET
     @Path("/route")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public List<JourneyDto> findByRoute(@QueryParam("start") long startStation, @QueryParam("end") long endStation) {
+    public List<JourneyDto> findByRoute(
+            @Min(0)
+            @QueryParam("start")
+                    long startStation,
+            @Min(0)
+            @QueryParam("end")
+                    long endStation) {
         return journeyService.findByRouteDto(startStation, endStation);
     }
 
@@ -96,7 +103,7 @@ public class JourneyRestService {
     }
 
     @DELETE
-    @Path("/delete/{id}")
+    @Path("/{id}")
     public void deleteJourney(@PathParam("id") long id) {
         journeyService.deleteJourney(id);
     }
