@@ -14,7 +14,6 @@ import java.util.logging.Logger;
 import com.example.projects.service.StationService;
 import javax.ejb.Timer;
 
-
 /**
  * Created by GTaggart on 02/03/2018.
  */

@@ -7,7 +7,6 @@ import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
-
 @XmlRootElement
 @JsonIgnoreProperties
 public class BikeDto implements DtoInterface {
@@ -16,7 +15,6 @@ public class BikeDto implements DtoInterface {
     private List<Long> journeyIds;
     private String currentStation;
     private String previousStation;
-
 
     public BikeDto(Long bikeId, List<Long> journeyIds, String currentStation, String previousStation) {
         this.bikeId = bikeId;

@@ -90,6 +90,6 @@ public class BikeService {
     }
 
     public void setAllBikeTrackedToFalse() {
-       // bikeRepository.setAllBikeTrackedToFalse();
+        bikeRepository.setAllBikeTrackedToFalse();
     };
 }

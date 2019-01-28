@@ -44,9 +44,9 @@ public class BikeRepository {
 
     public void setAllBikeTrackedToFalse() {
         Query q = em.createNativeQuery(
-                "UPDATE bike " +
-                        "SET tracked = 0 " +
-                        "WHERE tracked = 1");
+                "UPDATE public.bike " +
+                        "SET tracked = false " +
+                        "WHERE tracked = true ");
         q.executeUpdate();
     };
 }

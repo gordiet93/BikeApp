@@ -23,6 +23,8 @@ import java.util.List;
  */
 public class Helper {
 
+    private static final String BELFAST_BIKES_URL = "https://iframe.nextbike.net/maps/nextbike-live.xml?&city=238";
+
     public static Markers getData() throws IOException, JAXBException {
 
 //        SocketAddress addr = new
@@ -32,12 +34,11 @@ public class Helper {
 //        URL url = new URL("https://iframe.nextbike.net/maps/nextbike-live.xml?city=238");
 //        URLConnection conn = url.openConnection(proxy);
 //
-//
 //        File file = new File("C:\\DMS\\BikeWebapp\\src\\Bikes.xml");
 //        JAXBContext jaxbContext = JAXBContext.newInstance(Markers.class);
 //        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
 
-        URL url = new URL("https://iframe.nextbike.net/maps/nextbike-live.xml?&city=238");
+        URL url = new URL(BELFAST_BIKES_URL);
         JAXBContext jaxbContext = JAXBContext.newInstance(Markers.class);
         Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
         return (Markers) unmarshaller.unmarshal(url);
