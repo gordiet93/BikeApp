@@ -12,7 +12,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
 
-@Path("/station")
+@Path("/stations")
 @RequestScoped
 public class StationRestService implements  RestServiceInterface {
 
@@ -21,7 +21,6 @@ public class StationRestService implements  RestServiceInterface {
 
     @Override
     @GET
-    @Path("/all")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public List<StationDto> listAll() { return stationService.findAllOrderedByNameDto(); }
 

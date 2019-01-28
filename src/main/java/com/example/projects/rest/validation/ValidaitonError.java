@@ -1,4 +1,4 @@
-package com.example.projects.rest;
+package com.example.projects.rest.validation;
 
 public class ValidaitonError {
 
