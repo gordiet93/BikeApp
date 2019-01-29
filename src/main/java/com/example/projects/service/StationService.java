@@ -1,5 +1,6 @@
 package com.example.projects.service;
 
+import com.example.projects.data.DepartureRepository;
 import com.example.projects.data.StationRepository;
 import com.example.projects.dto.StationDto;
 import com.example.projects.model.*;
@@ -24,43 +25,48 @@ public class StationService {
     private StationRepository stationRepository;
 
     @Inject
+    private DepartureRepository departureRepository;
+
+    @Inject
     private BikeService bikeService;
     
     @Inject
     private JourneyService journeyService;
 
     public void checkArrivalsAndDepartures() {
-        List<Bike> transitBikes = bikeService.findByStatus(BikeStatus.TRANSIT);
         List<Bike> dockedBikes = bikeService.findByStatus(BikeStatus.DOCKED);
-        List<Bike> unknownBikes = bikeService.findByStatus(BikeStatus.UNKNOWN);
-        List<Station> updatedStations = loadStationsXml();
+        List<Bike> updatedBikes = registerNewStationsAndLoadBikesFromXml();
 
-        checkForNewStations(updatedStations);
-
-        checkArrivals(updatedStations, transitBikes, unknownBikes, dockedBikes);
-        checkDepartures(dockedBikes);
+        checkArrivals(updatedBikes, dockedBikes);
+        checkDepartures(updatedBikes, dockedBikes);
     }
 
-    private void checkArrivals(List<Station> updatedStations, List<Bike> transitBikes, List<Bike> unknownBikes,
-                              List<Bike> dockedBikes) {
-        for (Station updatedStation : updatedStations) {
-            for (Bike updatedBike : updatedStation.getBikes()) {
-                if (transitBikes.contains(updatedBike)) {
-                    recordJourney(updatedBike);
-                } else if (!dockedBikes.contains(updatedBike) && !unknownBikes.contains(updatedBike)) {
-                    bikeService.register(updatedBike);
-                    continue;
+    private void checkArrivals(List<Bike> updatedBikes, List<Bike> dockedBikes) {
+        for (Bike updatedBike : updatedBikes) {
+
+            Bike loadedBike = bikeService.findById(updatedBike.getBikeId());
+
+            if (loadedBike == null) {
+                dockedBikes.add(updatedBike);
+                bikeService.register(updatedBike);
+
+            } else {
+                Departure departure = departureRepository.getByBike(updatedBike.getBikeId());
+                if (departure != null) {
+
+                    recordJourney(updatedBike, departure);
+                    departureRepository.deleteDeparture(departure);
                 }
+
+                updatedBike.setPreviousStation(loadedBike.getPreviousStation());
                 bikeService.merge(updatedBike);
             }
         }
     }
 
-    private void checkDepartures(List<Bike> dockedBikes) {
-        List<Long> bikeIds = Helper.getDataBikeIds();
-
+    private void checkDepartures(List<Bike> updateBikes, List<Bike> dockedBikes) {
         for (Bike bike : dockedBikes) {
-            if (!bikeIds.contains(bike.getBikeId())) {
+            if (!updateBikes.contains(bike)) {
                 departBike(bike);
             }
         }
@@ -69,38 +75,25 @@ public class StationService {
     private void departBike(Bike bike) {
         bike.setPreviousStation(bike.getCurrentStation());
         bike.setStatus(BikeStatus.TRANSIT);
-        bike.setDepartureTime(System.currentTimeMillis());
 
-        bikeService.merge(bike);
-
+        departureRepository.addDeparture(new Departure(bike, bike.getCurrentStation(), new Date()));
         log.info(bike + " departed " + bike.getCurrentStation());
+
+        bike.setCurrentStation(null);
+        bikeService.merge(bike);
     }
 
-
-    private void recordJourney(Bike bike) {
-        Journey journey = new Journey(bike, bike.getPreviousStation(),
-                bike.getCurrentStation(),
-                Helper.calDurationInMinutes(System.currentTimeMillis() - bike.getDepartureTime()),
-                new Date(), bike.isDepartedOutsideTopFive());
+    private void recordJourney(Bike bike, Departure departure) {
+        Journey journey = new Journey(bike, departure.getDepartureStation(), bike.getCurrentStation(),
+                Helper.calDurationInMinutes(System.currentTimeMillis() - departure.getDepartureTime().getTime()),
+                departure.getDepartureTime(), new Date(), bike.isDepartedOutsideTopFive());
 
         journeyService.recordJourney(journey);
     }
 
-    public void registerStations() {
+    public void registerStationsAndUpdateBikeLocations() {
         bikeService.setAllStatusToUnknown();
-
-        List<Station> stations = loadStationsXml();
-        Station transit = new Station(0L,"Transit");
-        stations.add(transit);
-
-        for (Station station : stations) {
-            Station loadedStation = findById(station.getStationId());
-            //If station does not exist yet, register it
-            if (loadedStation == null) {
-                register(station);
-            }
-            bikeService.updateOrRegisterBikes(station);
-        }
+        bikeService.updateOrRegisterBikes(registerNewStationsAndLoadBikesFromXml());
     }
 
     private void checkForNewStations(List<Station> stations) {
@@ -113,8 +106,9 @@ public class StationService {
         }
     }
 
-    private List<Station> loadStationsXml() {
+    private List<Bike> registerNewStationsAndLoadBikesFromXml() {
         List<Station> stations = new ArrayList<>();
+        List<Bike> bikes = new ArrayList<>();
         try {
             List<Country> countries = Helper.getData().getCountries();
 
@@ -122,17 +116,22 @@ public class StationService {
                 if (country.getCity() != null) {
                     stations.addAll(country.getCity().getStations());
 
-                    for(Station station : stations) {
+                    for (Station station : stations) {
                         for (Bike bike : station.getBikes()) {
                             bike.setCurrentStation(station);
                         }
+
+                        bikes.addAll(station.getBikes());
                     }
                 }
             }
+
+            checkForNewStations(stations);
+
         } catch (IOException | JAXBException e) {
             e.printStackTrace();
         }
-        return stations;
+        return bikes;
     }
 
     public Station findById(Long stationId) {

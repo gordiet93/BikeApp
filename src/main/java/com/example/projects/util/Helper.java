@@ -42,14 +42,15 @@ public class Helper {
 //        URL url = new URL("https://iframe.nextbike.net/maps/nextbike-live.xml?city=238");
 //        URLConnection conn = url.openConnection(proxy);
 //
-//        File file = new File("C:\\DMS\\BikeWebapp\\src\\Bikes.xml");
+        File file = new File("D:\\Documents\\Projects\\BikeWebapp\\src\\main\\resources\\bikes.xml");
+        JAXBContext jaxbContext = JAXBContext.newInstance(Markers.class);
+        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+
+//        URL url = new URL(BELFAST_BIKES_URL);
 //        JAXBContext jaxbContext = JAXBContext.newInstance(Markers.class);
 //        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
 
-        URL url = new URL(BELFAST_BIKES_URL);
-        JAXBContext jaxbContext = JAXBContext.newInstance(Markers.class);
-        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-        return (Markers) unmarshaller.unmarshal(url);
+        return (Markers) unmarshaller.unmarshal(file);
     }
 
     public static ArrayList<Long> getDataBikeIds() {

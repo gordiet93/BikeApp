@@ -25,15 +25,12 @@ public class Bike implements Serializable {
     private List<Journey> journeys = new ArrayList<>();
 
     @ManyToOne
-    @JoinColumn(name = "current_station", nullable = false)
+    @JoinColumn(name = "current_station")
     private Station currentStation;
 
     @ManyToOne
     @JoinColumn(name = "previous_station", referencedColumnName = "station_id")
     private Station previousStation;
-
-    @Transient
-    private long departureTime;
 
     @Transient
     private boolean departedOutsideTopFive;
@@ -101,14 +98,6 @@ public class Bike implements Serializable {
 
     public void setPreviousStation(Station previousStation) {
         this.previousStation = previousStation;
-    }
-
-    public long getDepartureTime() {
-        return departureTime;
-    }
-
-    public void setDepartureTime(long departureTime) {
-        this.departureTime = departureTime;
     }
 
     public boolean isDepartedOutsideTopFive() {

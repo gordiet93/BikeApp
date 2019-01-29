@@ -38,7 +38,7 @@ public class JourneyService {
         return new JourneyDto(journey.getJourneyId(), journey.getBike().getBikeId(),
                 journey.getStartStation().getStationId(), journey.getEndStation().getStationId(),
                 journey.getStartStation().getStationName(), journey.getEndStation().getStationName(),
-                journey.getDuration(), journey.getDateTimeFinish(), journey.isOutsideTopFive());
+                journey.getDuration(), journey.getArrivalTime(), journey.isOutsideTopFive());
     }
 
     public List<JourneyDto> findAllOrderedByIdDto() {
@@ -71,7 +71,7 @@ public class JourneyService {
             journeyDtos.add(new JourneyDto(journey.getJourneyId(), journey.getBike().getBikeId(),
                     journey.getStartStation().getStationId(), journey.getEndStation().getStationId(),
                     journey.getStartStation().getStationName(), journey.getEndStation().getStationName(),
-                    journey.getDuration(), journey.getDateTimeFinish(), journey.isOutsideTopFive()));
+                    journey.getDuration(), journey.getArrivalTime(), journey.isOutsideTopFive()));
         }
         return journeyDtos;
     }

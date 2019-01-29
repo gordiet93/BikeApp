@@ -31,6 +31,7 @@ public class Station implements Serializable {
 
     private static Map<Long, Bike> bikesInTransit = new HashMap<>();
 
+    //not sure about CascadeType
     @OneToMany(mappedBy = "currentStation", cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     private List<Bike> bikes;
 

@@ -3,7 +3,6 @@ package com.example.projects.model;
 import javax.validation.constraints.NotNull;
 
 import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
 
 /**
@@ -35,9 +34,14 @@ public class Journey {
     private int duration;
 
     @NotNull
-    @Column(name = "datetime_finish")
+    @Column(name = "arrival_time")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date dateTimeFinish;
+    private Date arrivalTime;
+
+    @NotNull
+    @Column(name = "departure_time")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date departureTime;
 
     @NotNull
     @Column(name = "outside_top_five")
@@ -45,18 +49,15 @@ public class Journey {
 
     public Journey() {}
 
-    public Journey(Bike bike, Station startStation, Station endStation, int duration, Date dateTimeFinish, boolean outsideTopFive) {
+    public Journey(Bike bike, Station startStation, Station endStation, int duration, Date departureTime,
+                   Date arrivalTime, boolean outsideTopFive) {
         this.bike = bike;
         this.startStation = startStation;
         this.endStation = endStation;
         this.duration = duration;
-        this.dateTimeFinish = dateTimeFinish;
+        this.departureTime = departureTime;
+        this.arrivalTime = arrivalTime;
         this.outsideTopFive = outsideTopFive;
-    }
-
-    @Override
-    public String toString() {
-        return "Journey " + journeyId;
     }
 
     public long getJourneyId() {
@@ -99,12 +100,20 @@ public class Journey {
         this.outsideTopFive = outsideTopFive;
     }
 
-    public Date getDateTimeFinish() {
-        return dateTimeFinish;
+    public Date getDepartureTime() {
+        return departureTime;
     }
 
-    public void setDateTimeFinish(Date dateTimeFinish) {
-        this.dateTimeFinish = dateTimeFinish;
+    public void setDepartureTime(Date departureTime) {
+        this.departureTime = departureTime;
+    }
+
+    public Date getArrivalTime() {
+        return arrivalTime;
+    }
+
+    public void setArrivalTime(Date dateTimeFinish) {
+        this.arrivalTime = dateTimeFinish;
     }
 
     public Bike getBike() {
@@ -113,5 +122,10 @@ public class Journey {
 
     public void setBike(Bike bike) {
         this.bike = bike;
+    }
+
+    @Override
+    public String toString() {
+        return "Journey " + journeyId;
     }
 }
