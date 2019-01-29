@@ -32,6 +32,7 @@ public class BikeService {
 
     public void register(Bike bike) {
         log.info("Registering " + bike + " at " + bike.getCurrentStation());
+        bike.setStatus(BikeStatus.DOCKED);
         bikeRepository.register(bike);
     }
 
