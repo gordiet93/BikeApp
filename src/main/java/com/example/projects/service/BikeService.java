@@ -80,17 +80,14 @@ public class BikeService {
         return journeys;
     }
 
-    public void updateOrRegisterBikes(Station station) {
-        for (Bike bike : station.getBikes()) {
+    public void updateOrRegisterBikes(List<Bike> bikes) {
+        for (Bike bike : bikes) {
             Bike loadedBike = findById(bike.getBikeId());
             //Bike does not exist yet, register it
             if (loadedBike == null) {
-                bike.setCurrentStation(station);
-                bike.setStatus(BikeStatus.DOCKED);
                 register(bike);
             } else {
-                loadedBike.setStatus(BikeStatus.DOCKED);
-                loadedBike.setCurrentStation(station);
+                merge(bike);
             }
         }
     }

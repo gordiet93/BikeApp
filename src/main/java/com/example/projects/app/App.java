@@ -38,11 +38,11 @@ public class App {
     @PostConstruct
     public void initialize() {
 
-        stationService.registerStations();
+        stationService.registerStationsAndUpdateBikeLocations();
 
         ScheduleExpression se = new ScheduleExpression();
         // Set schedule to every min (starting at second 0 of every minute).
-        se.hour("*").minute("*");//.second("0/1");
+        se.hour("*").minute("*");//.second("0/5");
         timerService.createCalendarTimer(se, new TimerConfig("EJB timer service timeout at ", false));
     }
 

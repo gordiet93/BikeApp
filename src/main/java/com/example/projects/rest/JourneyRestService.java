@@ -79,17 +79,17 @@ public class JourneyRestService {
         return journeyService.findBetweenDate(start, end);
     }
 
-    @POST
-    @Path("/add")
-    @Consumes({MediaType.APPLICATION_JSON})
-    public void addJourney(JourneyDto journeyDto) {
-        Journey journey = new Journey(bikeService.findById(journeyDto.getBikeId()),
-                stationService.findById(journeyDto.getStartStationId()), stationService.findById(journeyDto.getEndStationId()),
-                journeyDto.getDuration(), new Date(), false);
-
-        journeyService.recordJourney(journey);
-        log.info("Adding journey via REST POST");
-    }
+//    @POST
+//    @Path("/add")
+//    @Consumes({MediaType.APPLICATION_JSON})
+//    public void addJourney(JourneyDto journeyDto) {
+//        Journey journey = new Journey(bikeService.findById(journeyDto.getBikeId()),
+//                stationService.findById(journeyDto.getStartStationId()), stationService.findById(journeyDto.getEndStationId()),
+//                journeyDto.getDuration(), new Date(), false);
+//
+//        journeyService.recordJourney(journey);
+//        log.info("Adding journey via REST POST");
+//    }
 
     @POST
     @Path("/test")
