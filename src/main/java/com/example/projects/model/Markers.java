@@ -18,7 +18,6 @@ public class Markers {
         this.country = country;
     }*/
 
-
     private List<Country> countries;
 
     public List<Country> getCountries() {

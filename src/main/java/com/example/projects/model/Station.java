@@ -98,4 +98,3 @@ public class Station implements Serializable {
         return totalArrivals;
     }
 }
-

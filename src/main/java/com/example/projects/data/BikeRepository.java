@@ -1,6 +1,7 @@
 package com.example.projects.data;
 
 import com.example.projects.model.Bike;
+import com.example.projects.model.BikeStatus;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -38,15 +39,24 @@ public class BikeRepository {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Bike> criteriaQuery = cb.createQuery(Bike.class);
         Root<Bike> bike = criteriaQuery.from(Bike.class);
+
         criteriaQuery.select(bike).orderBy(cb.asc(bike.get("currentStation")));
         return em.createQuery(criteriaQuery).getResultList();
     }
 
-    public void setAllBikeTrackedToFalse() {
+    public List<Bike> findByStatus(BikeStatus status) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Bike> criteriaQuery = cb.createQuery(Bike.class);
+        Root<Bike> bikeRoot = criteriaQuery.from(Bike.class);
+
+        criteriaQuery.where(cb.equal(bikeRoot.get("status"), status));
+        return em.createQuery(criteriaQuery).getResultList();
+    }
+
+    public void setAllStatusToUnknown() {
         Query q = em.createNativeQuery(
-                "UPDATE bike " +
-                        "SET tracked = 0 " +
-                        "WHERE tracked = 1");
+                "UPDATE public.bike " +
+                        "SET status = 'UNKNOWN' ");
         q.executeUpdate();
-    };
+    }
 }

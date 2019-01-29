@@ -19,7 +19,7 @@ public class BikeRestService implements RestServiceInterface {
 
     @Override
     @GET
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces({MediaType.APPLICATION_JSON})
     public List<BikeDto> listAll() {
         return bikeService.findAllOrderedByStationNameDto();
     }

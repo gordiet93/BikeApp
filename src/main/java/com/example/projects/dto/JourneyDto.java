@@ -17,7 +17,6 @@ public class JourneyDto implements DtoInterface {
     private Date dateTimeFinish;
     private boolean outsideTopFive;
 
-
     public JourneyDto(long journeyId, Long bikeId, Long startStationId, Long endStationId, String startStation,
                       String endStation, int duration, Date dateTimeFinish, boolean outsideTopFive) {
         this.journeyId = journeyId;

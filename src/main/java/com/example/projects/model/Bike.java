@@ -6,8 +6,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 
 /**
  * Created by GTaggart on 28/02/2018.
@@ -40,18 +38,19 @@ public class Bike implements Serializable {
     @Transient
     private boolean departedOutsideTopFive;
 
-    @Column(name = "tracked")
-    private boolean tracked;
+    @Enumerated(EnumType.STRING)
+    private BikeStatus status;
 
     public Bike() {
         departedOutsideTopFive = false;
+        this.status = BikeStatus.DOCKED;
     }
 
     public Bike(Long id, Station currentStation) {
         this.bikeId = id;
         this.currentStation = currentStation;
         departedOutsideTopFive = false;
-        tracked = false;
+        status = BikeStatus.DOCKED;
     }
 
     //Check for bikeId match
@@ -116,14 +115,6 @@ public class Bike implements Serializable {
         return departedOutsideTopFive;
     }
 
-    public boolean isTracked() {
-        return tracked;
-    }
-
-    public void setTracked(boolean tracked) {
-        this.tracked = tracked;
-    }
-
     public void setDepartedOutsideTopFive(boolean departedOutsideTopFive) {
         this.departedOutsideTopFive = departedOutsideTopFive;
     }
@@ -134,5 +125,13 @@ public class Bike implements Serializable {
 
     public void setJourneys(List<Journey> journeys) {
         this.journeys = journeys;
+    }
+
+    public BikeStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(BikeStatus status) {
+        this.status = status;
     }
 }

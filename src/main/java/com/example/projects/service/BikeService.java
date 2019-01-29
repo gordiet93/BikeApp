@@ -3,6 +3,7 @@ package com.example.projects.service;
 import com.example.projects.data.BikeRepository;
 import com.example.projects.dto.BikeDto;
 import com.example.projects.model.Bike;
+import com.example.projects.model.BikeStatus;
 import com.example.projects.model.Journey;
 import com.example.projects.model.Station;
 
@@ -31,6 +32,7 @@ public class BikeService {
 
     public void register(Bike bike) {
         log.info("Registering " + bike + " at " + bike.getCurrentStation());
+        bike.setStatus(BikeStatus.DOCKED);
         bikeRepository.register(bike);
     }
 
@@ -40,6 +42,10 @@ public class BikeService {
 
     public List<Bike> findAllOrderedByStationName() {
         return bikeRepository.findAllOrderedByStationName();
+    }
+
+    public List<Bike> findByStatus(BikeStatus status) {
+        return bikeRepository.findByStatus(status);
     }
 
     public BikeDto findByIdDto(Long id) {
@@ -80,16 +86,16 @@ public class BikeService {
             //Bike does not exist yet, register it
             if (loadedBike == null) {
                 bike.setCurrentStation(station);
-                bike.setTracked(true);
+                bike.setStatus(BikeStatus.DOCKED);
                 register(bike);
             } else {
-                loadedBike.setTracked(true);
+                loadedBike.setStatus(BikeStatus.DOCKED);
                 loadedBike.setCurrentStation(station);
             }
         }
     }
 
-    public void setAllBikeTrackedToFalse() {
-       // bikeRepository.setAllBikeTrackedToFalse();
-    };
+    public void setAllStatusToUnknown() {
+        bikeRepository.setAllStatusToUnknown();
+    }
 }
