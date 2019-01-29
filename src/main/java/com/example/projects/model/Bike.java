@@ -40,8 +40,10 @@ public class Bike implements Serializable {
     @Transient
     private boolean departedOutsideTopFive;
 
-    @Column(name = "tracked")
     private boolean tracked;
+
+    @Enumerated(EnumType.STRING)
+    private BikeStatus status;
 
     public Bike() {
         departedOutsideTopFive = false;
@@ -52,6 +54,7 @@ public class Bike implements Serializable {
         this.currentStation = currentStation;
         departedOutsideTopFive = false;
         tracked = false;
+        status = BikeStatus.DOCKED;
     }
 
     //Check for bikeId match
@@ -134,5 +137,13 @@ public class Bike implements Serializable {
 
     public void setJourneys(List<Journey> journeys) {
         this.journeys = journeys;
+    }
+
+    public BikeStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(BikeStatus status) {
+        this.status = status;
     }
 }

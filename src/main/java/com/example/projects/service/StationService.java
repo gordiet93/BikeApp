@@ -2,11 +2,9 @@ package com.example.projects.service;
 
 import com.example.projects.data.StationRepository;
 import com.example.projects.dto.StationDto;
-import com.example.projects.model.Bike;
-import com.example.projects.model.Country;
-import com.example.projects.model.Journey;
-import com.example.projects.model.Station;
+import com.example.projects.model.*;
 import com.example.projects.util.Helper;
+import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -33,29 +31,61 @@ public class StationService {
     private JourneyService journeyService;
 
     public void checkArrivalsAndDepartures() {
-        List<Station> updatedStations = loadStationsXml();
 
+    }
+
+    public void checkDepartures() {
+        List<Long> bikeIds = Helper.getDataBikeIds();
+        List<Bike> dockedBikes = bikeService.findByStatus(BikeStatus.DOCKED);
+
+        for (Bike bike : dockedBikes) {
+            if (!bikeIds.contains(bike.getBikeId())) {
+                //depart bike
+            }
+        }
+    }
+
+    public void checkArrivals() {
+        List<Station> updatedStations = loadStationsXml();
         checkForNewStations(updatedStations);
+
+        for (Station updatedStation : updatedStations) {
+            Station station = findById(updatedStation.getStationId());
+
+
+            for (Bike bike : station.getBikes()) {
+                if (transitBikes.contains(bike)) {
+                    //complete journey
+                } else if (unknownBikes.contains(bike)) {
+                    //bike now in docked state
+                } else if (dockedBikes.contains(bike)) {
+                    //check if
+                } else {
+                        //create a new bike
+                }
+            }
+        }
+
+        //checkForNewStations(updatedStations)
+
+
 
         for (Station updatedStation : updatedStations) {
             for (Bike updatedBike : updatedStation.getBikes()) {
 
                 //Check for any arrivals
-                if (Station.getBikesInTransit().containsKey(updatedBike.getBikeId())) {
-
-                    Bike transitBike = Station.getBikesInTransit().get(updatedBike.getBikeId());
-                    transitBike.setCurrentStation(updatedStation);
-
-                    //if bike arrives at same station it departed form do not record
-                    if (transitBike.getPreviousStation().getStationId().equals(updatedStation.getStationId())) {
-                        log.info(transitBike + " arrived at " + transitBike.getCurrentStation() + " from "
-                                + transitBike.getPreviousStation() + ". Not Recording journey as same start and end stations");
-                    } else {
-                        recordJourney(transitBike);
-                    }
-
-                    bikeService.merge(transitBike);
-                    Station.getBikesInTransit().remove(transitBike.getBikeId());
+                if (loadedBikes.contains(updatedBike)) {
+//                    Bike loadedBike = bikesInTransit.
+//
+//                    //if bike arrives at same station it departed form do not record
+//                    if (loadedBike.getPreviousStation().equals(updatedStation)) {
+//                        log.info(transitBike + " arrived at " + transitBike.getCurrentStation() + " from "
+//                                + transitBike.getPreviousStation() + ". Not Recording journey as same start and end stations");
+//                    } else {
+//                        recordJourney(transitBike);
+//                    }
+//
+//                    bikeService.merge(updatedBike);
 
                 } else {
                     //get bike from database
@@ -64,13 +94,13 @@ public class StationService {
                     //register bike if bike does not exist in the database
                     if (loadedBike == null) {
 
-                        updatedBike.setTracked(true);
+                        updatedBike.setStatus(BikeStatus.DOCKED);
                         updatedBike.setCurrentStation(updatedStation);
                         bikeService.register(updatedBike);
 
                         //bike exists, update it's current station if need be
-                    } else if (!loadedBike.isTracked()){
-                        loadedBike.setTracked(true);
+                    } else if (loadedBike.getStatus().equals(BikeStatus.UNKNOWN)){
+                        loadedBike.setStatus(BikeStatus.DOCKED);
                         loadedBike.setCurrentStation(updatedStation);
                         bikeService.merge(loadedBike);
                         log.info(updatedBike + " arrived at " + updatedStation + ". Was not tracked");
@@ -120,7 +150,7 @@ public class StationService {
     }
 
     public void registerStations() {
-        bikeService.setAllBikeTrackedToFalse();
+        bikeService.setAllStatusToUnknown();
 
         List<Station> stations = loadStationsXml();
         Station transit = new Station(0L,"Transit");
