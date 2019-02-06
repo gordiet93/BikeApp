@@ -9,8 +9,7 @@ import java.util.List;
  * Created by GTaggart on 02/03/2018.
  */
 @XmlRootElement(name = "city")
-public class
-City {
+public class City {
 
     private List<Station> stations;
 

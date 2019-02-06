@@ -29,6 +29,10 @@ public class StationRepository {
         return em.find(Station.class, id);
     }
 
+    public Station findByIdRef(Long id) {
+        return em.getReference(Station.class, id);
+    }
+
     public List<Station> findAllOrderedByName() {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Station> criteriaQuery = cb.createQuery(Station.class);

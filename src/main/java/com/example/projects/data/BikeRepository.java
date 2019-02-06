@@ -27,6 +27,10 @@ public class BikeRepository {
         return em.find(Bike.class, id);
     }
 
+    public Bike findByIdRef(Long id) {
+        return em.getReference(Bike.class, id);
+    }
+
     public void register(Bike bike) {
         em.persist(bike);
     }

@@ -2,15 +2,17 @@ package com.example.projects.service;
 
 import com.example.projects.data.BikeRepository;
 import com.example.projects.dto.BikeDto;
-import com.example.projects.model.Bike;
-import com.example.projects.model.BikeStatus;
-import com.example.projects.model.Journey;
-import com.example.projects.model.Station;
+import com.example.projects.model.*;
+import com.example.projects.util.Helper;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.xml.bind.JAXBException;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -28,6 +30,10 @@ public class BikeService {
     public Bike findById(Long id) {
         //log.info("Finding bike " + id);
         return bikeRepository.findById(id);
+    }
+
+    public Bike findByIdRef(Long id) {
+        return bikeRepository.findByIdRef(id);
     }
 
     public void register(Bike bike) {
@@ -94,5 +100,23 @@ public class BikeService {
 
     public void setAllStatusToUnknown() {
         bikeRepository.setAllStatusToUnknown();
+    }
+
+    public Map<Long , Long> loadBikeDataFromXml() {
+        Map<Long, Long> bikeData = new HashMap<>();
+        try {
+            for(Country country : Helper.getData().getCountries()) {
+                if (country.getCity() != null) {
+                    for (Station station : country.getCity().getStations()) {
+                        for (Bike bike : station.getBikes()) {
+                            bikeData.put(bike.getBikeId(), station.getStationId());
+                        }
+                    }
+                }
+            }
+        } catch (IOException | JAXBException e) {
+            e.printStackTrace();
+        }
+        return bikeData;
     }
 }
