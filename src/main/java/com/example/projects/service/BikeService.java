@@ -75,20 +75,20 @@ public class BikeService {
         } else {
             previousStationName = bike.getPreviousStation().getStationName();
         }
-        return new BikeDto(bike.getBikeId(), getJourneyIds(bike), bike.getCurrentStation().getStationName(), previousStationName);
+        return new BikeDto(bike.getId(), getJourneyIds(bike), bike.getCurrentStation().getStationName(), previousStationName);
     }
 
     private List<Long> getJourneyIds(Bike bike) {
         List<Long> journeys = new ArrayList<>();
         for (Journey journey : bike.getJourneys()) {
-            journeys.add(journey.getJourneyId());
+            journeys.add(journey.getId());
         }
         return journeys;
     }
 
     public void updateOrRegisterBikes(List<Bike> bikes) {
         for (Bike bike : bikes) {
-            Bike loadedBike = findById(bike.getBikeId());
+            Bike loadedBike = findById(bike.getId());
             //Bike does not exist yet, register it
             if (loadedBike == null) {
                 register(bike);
@@ -109,7 +109,7 @@ public class BikeService {
                 if (country.getCity() != null) {
                     for (Station station : country.getCity().getStations()) {
                         for (Bike bike : station.getBikes()) {
-                            bikeData.put(bike.getBikeId(), station.getStationId());
+                            bikeData.put(bike.getId(), station.getId());
                         }
                     }
                 }

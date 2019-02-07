@@ -58,7 +58,7 @@ public class StationService {
 
             switch (bikeStatus) {
                 case TRANSIT:
-                    Departure departure = departureRepository.getByBike(loadedBike.getBikeId());
+                    Departure departure = departureRepository.getByBike(loadedBike.getId());
                     if (departure != null) {
                         loadedBike.setCurrentStation(currentStation);
                         recordJourney(loadedBike, departure);
@@ -86,7 +86,7 @@ public class StationService {
 
     private void checkDepartures(Map<Long, Long> updatedBikes, List<Bike> dockedBikes) {
         for (Bike bike : dockedBikes) {
-            if (!updatedBikes.containsKey(bike.getBikeId())) {
+            if (!updatedBikes.containsKey(bike.getId())) {
                 departBike(bike);
             }
         }
@@ -118,7 +118,7 @@ public class StationService {
 
     private void checkForNewStations(List<Station> stations) {
         for (Station station : stations) {
-            Station loadedStation = findById(station.getStationId());
+            Station loadedStation = findById(station.getId());
             //If station does not exist yet, register it
             if (loadedStation == null) {
                 register(station);
@@ -160,7 +160,7 @@ public class StationService {
 
     public StationDto findByIdDto(Long stationId) {
         Station station = stationRepository.findById(stationId);
-        return new StationDto(station.getStationId(), station.getStationName(), station.getTotalDepartures(),
+        return new StationDto(station.getId(), station.getStationName(), station.getTotalDepartures(),
                 station.getTotalArrivals(), getBikeIds(station));
     }
 
@@ -177,7 +177,7 @@ public class StationService {
         List<StationDto> stationDtos = new ArrayList<>();
         List<Station> stations = findAllOrderedByName();
         for (Station station : stations) {
-            stationDtos.add(new StationDto(station.getStationId(), station.getStationName(),
+            stationDtos.add(new StationDto(station.getId(), station.getStationName(),
                     station.getTotalDepartures(), station.getTotalArrivals(), getBikeIds(station)));
         }
         return stationDtos;
@@ -186,7 +186,7 @@ public class StationService {
     private List<Long> getBikeIds(Station station) {
         List<Long> bikes = new ArrayList<>();
         for (Bike bike : station.getBikes()) {
-            bikes.add(bike.getBikeId());
+            bikes.add(bike.getId());
         }
         return bikes;
     }

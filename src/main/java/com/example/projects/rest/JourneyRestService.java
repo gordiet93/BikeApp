@@ -83,7 +83,7 @@ public class JourneyRestService {
 //    @Path("/add")
 //    @Consumes({MediaType.APPLICATION_JSON})
 //    public void addJourney(JourneyDto journeyDto) {
-//        Journey journey = new Journey(bikeService.findById(journeyDto.getBikeId()),
+//        Journey journey = new Journey(bikeService.findById(journeyDto.getId()),
 //                stationService.findById(journeyDto.getStartStationId()), stationService.findById(journeyDto.getEndStationId()),
 //                journeyDto.getDuration(), new Date(), false);
 //

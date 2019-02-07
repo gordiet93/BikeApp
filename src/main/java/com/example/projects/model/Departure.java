@@ -9,15 +9,15 @@ public class Departure {
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(name = "departure_id")
-    private Long departureId;
+    @Column(name = "id")
+    private Long id;
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "bike_id")
     private Bike bike;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "departure_station", referencedColumnName = "station_id")
+    @JoinColumn(name = "departure_station")
     private Station departureStation;
 
     @Column(name = "departure_time")
@@ -32,12 +32,12 @@ public class Departure {
         this.departureTime = departureTime;
     }
 
-    public Long getDepartureId() {
-        return departureId;
+    public Long getId() {
+        return id;
     }
 
-    public void setDepartureId(Long departureId) {
-        this.departureId = departureId;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public Bike getBike() {
@@ -66,6 +66,6 @@ public class Departure {
 
     @Override
     public String toString() {
-        return "Departure " + departureId;
+        return "Departure " + id;
     }
 }

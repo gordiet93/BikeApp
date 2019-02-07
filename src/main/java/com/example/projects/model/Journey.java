@@ -15,19 +15,19 @@ public class Journey {
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    @Column(name = "journey_id")
-    private Long journeyId;
+    @Column(name = "id")
+    private Long id;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "bike_id")
     private Bike bike;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "start_station", referencedColumnName = "station_id", nullable = false)
+    @JoinColumn(name = "start_station", nullable = false)
     private Station startStation;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "end_station", referencedColumnName = "station_id", nullable = false)
+    @JoinColumn(name = "end_station")
     private Station endStation;
 
     @NotNull
@@ -60,12 +60,12 @@ public class Journey {
         this.outsideTopFive = outsideTopFive;
     }
 
-    public long getJourneyId() {
-        return journeyId;
+    public long getId() {
+        return id;
     }
 
-    public void setJourneyId(long journeyId) {
-        this.journeyId = journeyId;
+    public void setId(long id) {
+        this.id = id;
     }
 
     public Station getStartStation() {
@@ -126,6 +126,6 @@ public class Journey {
 
     @Override
     public String toString() {
-        return "Journey " + journeyId;
+        return "Journey " + id;
     }
 }
