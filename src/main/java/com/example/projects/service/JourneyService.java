@@ -65,6 +65,10 @@ public class JourneyService {
         return modelToDto(journeyRepository.findBetweenDate(start, end));
     }
 
+    public List<JourneyDto> findByBike(long id) {
+        return modelToDto(journeyRepository.findByBike(id));
+    }
+
     private List<JourneyDto> modelToDto(List<Journey> journeys) {
         List<JourneyDto> journeyDtos = new ArrayList<>();
         for (Journey journey : journeys) {
