@@ -2,15 +2,17 @@ package com.example.projects.service;
 
 import com.example.projects.data.BikeRepository;
 import com.example.projects.dto.BikeDto;
-import com.example.projects.model.Bike;
-import com.example.projects.model.BikeStatus;
-import com.example.projects.model.Journey;
-import com.example.projects.model.Station;
+import com.example.projects.model.*;
+import com.example.projects.util.Helper;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.xml.bind.JAXBException;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -28,6 +30,10 @@ public class BikeService {
     public Bike findById(Long id) {
         //log.info("Finding bike " + id);
         return bikeRepository.findById(id);
+    }
+
+    public Bike findByIdRef(Long id) {
+        return bikeRepository.findByIdRef(id);
     }
 
     public void register(Bike bike) {
@@ -69,20 +75,20 @@ public class BikeService {
         } else {
             previousStationName = bike.getPreviousStation().getStationName();
         }
-        return new BikeDto(bike.getBikeId(), getJourneyIds(bike), bike.getCurrentStation().getStationName(), previousStationName);
+        return new BikeDto(bike.getId(), getJourneyIds(bike), bike.getCurrentStation().getStationName(), previousStationName);
     }
 
     private List<Long> getJourneyIds(Bike bike) {
         List<Long> journeys = new ArrayList<>();
         for (Journey journey : bike.getJourneys()) {
-            journeys.add(journey.getJourneyId());
+            journeys.add(journey.getId());
         }
         return journeys;
     }
 
     public void updateOrRegisterBikes(List<Bike> bikes) {
         for (Bike bike : bikes) {
-            Bike loadedBike = findById(bike.getBikeId());
+            Bike loadedBike = findById(bike.getId());
             //Bike does not exist yet, register it
             if (loadedBike == null) {
                 register(bike);
@@ -94,5 +100,23 @@ public class BikeService {
 
     public void setAllStatusToUnknown() {
         bikeRepository.setAllStatusToUnknown();
+    }
+
+    public Map<Long , Long> loadBikeDataFromXml() {
+        Map<Long, Long> bikeData = new HashMap<>();
+        try {
+            for(Country country : Helper.getData().getCountries()) {
+                if (country.getCity() != null) {
+                    for (Station station : country.getCity().getStations()) {
+                        for (Bike bike : station.getBikes()) {
+                            bikeData.put(bike.getId(), station.getId());
+                        }
+                    }
+                }
+            }
+        } catch (IOException | JAXBException e) {
+            e.printStackTrace();
+        }
+        return bikeData;
     }
 }

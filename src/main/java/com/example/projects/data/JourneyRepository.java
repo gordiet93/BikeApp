@@ -97,6 +97,16 @@ public class JourneyRepository {
         return  em.createQuery(criteriaQuery).getResultList();
     }
 
+    public List<Journey> findByBike(long id) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Journey> criteriaQuery = cb.createQuery(Journey.class);
+        Root<Journey> journeyRoot = criteriaQuery.from(Journey.class);
+
+        criteriaQuery.where(cb.equal(journeyRoot.get("bike"), id));
+
+        return em.createQuery(criteriaQuery).getResultList();
+    }
+
     public void deleteJourney(long id) {
         Journey journey = findById(id);
         em.remove(journey);

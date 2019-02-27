@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 @Stateless
@@ -35,38 +36,57 @@ public class StationService {
 
     public void checkArrivalsAndDepartures() {
         List<Bike> dockedBikes = bikeService.findByStatus(BikeStatus.DOCKED);
-        List<Bike> updatedBikes = registerNewStationsAndLoadBikesFromXml();
+        Map<Long, Long> updatedBikes = bikeService.loadBikeDataFromXml();
 
-        checkArrivals(updatedBikes, dockedBikes);
+        checkArrivals(updatedBikes);
         checkDepartures(updatedBikes, dockedBikes);
     }
 
-    private void checkArrivals(List<Bike> updatedBikes, List<Bike> dockedBikes) {
-        for (Bike updatedBike : updatedBikes) {
+    private void checkArrivals(Map<Long, Long> updatedBikes) {
+        for (Map.Entry<Long, Long> updatedBike : updatedBikes.entrySet()) {
 
-            Bike loadedBike = bikeService.findById(updatedBike.getBikeId());
+            Bike loadedBike = bikeService.findById(updatedBike.getKey());
+            Station currentStation = stationRepository.findByIdRef(updatedBike.getValue());
 
             if (loadedBike == null) {
-                dockedBikes.add(updatedBike);
-                bikeService.register(updatedBike);
-
-            } else {
-                Departure departure = departureRepository.getByBike(updatedBike.getBikeId());
-                if (departure != null) {
-
-                    recordJourney(updatedBike, departure);
-                    departureRepository.deleteDeparture(departure);
-                }
-
-                updatedBike.setPreviousStation(loadedBike.getPreviousStation());
-                bikeService.merge(updatedBike);
+                Bike bike = new Bike(updatedBike.getKey(), currentStation);
+                bikeService.register(bike);
+                continue;
             }
+
+            BikeStatus bikeStatus = loadedBike.getStatus();
+
+            switch (bikeStatus) {
+                case TRANSIT:
+                    Departure departure = departureRepository.getByBike(loadedBike.getId());
+                    if (departure != null) {
+                        loadedBike.setCurrentStation(currentStation);
+                        recordJourney(loadedBike, departure);
+                        departureRepository.deleteDeparture(departure);
+                    }
+                    break;
+                case DOCKED:
+                    if (loadedBike.getCurrentStation() != currentStation
+                            && currentStation != null) {
+                        loadedBike.setPreviousStation(loadedBike.getCurrentStation());
+                        loadedBike.setCurrentStation(currentStation);
+                    }
+                    break;
+                case UNKNOWN:
+                    loadedBike.setCurrentStation(currentStation);
+                    break;
+                default:
+                    System.out.println("Invalid bikeStatus " + bikeStatus);
+            }
+
+            loadedBike.setStatus(BikeStatus.DOCKED);
+            //bikeService.merge(loadedBike);
         }
     }
 
-    private void checkDepartures(List<Bike> updateBikes, List<Bike> dockedBikes) {
+    private void checkDepartures(Map<Long, Long> updatedBikes, List<Bike> dockedBikes) {
         for (Bike bike : dockedBikes) {
-            if (!updateBikes.contains(bike)) {
+            if (!updatedBikes.containsKey(bike.getId())) {
                 departBike(bike);
             }
         }
@@ -98,7 +118,7 @@ public class StationService {
 
     private void checkForNewStations(List<Station> stations) {
         for (Station station : stations) {
-            Station loadedStation = findById(station.getStationId());
+            Station loadedStation = findById(station.getId());
             //If station does not exist yet, register it
             if (loadedStation == null) {
                 register(station);
@@ -140,7 +160,7 @@ public class StationService {
 
     public StationDto findByIdDto(Long stationId) {
         Station station = stationRepository.findById(stationId);
-        return new StationDto(station.getStationId(), station.getStationName(), station.getTotalDepartures(),
+        return new StationDto(station.getId(), station.getStationName(), station.getTotalDepartures(),
                 station.getTotalArrivals(), getBikeIds(station));
     }
 
@@ -157,7 +177,7 @@ public class StationService {
         List<StationDto> stationDtos = new ArrayList<>();
         List<Station> stations = findAllOrderedByName();
         for (Station station : stations) {
-            stationDtos.add(new StationDto(station.getStationId(), station.getStationName(),
+            stationDtos.add(new StationDto(station.getId(), station.getStationName(),
                     station.getTotalDepartures(), station.getTotalArrivals(), getBikeIds(station)));
         }
         return stationDtos;
@@ -166,7 +186,7 @@ public class StationService {
     private List<Long> getBikeIds(Station station) {
         List<Long> bikes = new ArrayList<>();
         for (Bike bike : station.getBikes()) {
-            bikes.add(bike.getBikeId());
+            bikes.add(bike.getId());
         }
         return bikes;
     }

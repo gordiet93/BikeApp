@@ -18,8 +18,8 @@ public class Bike implements Serializable {
 
     @Id
     @NotNull
-    @Column(name = "bike_id")
-    private Long bikeId;
+    @Column(name = "id")
+    private Long id;
 
     @OneToMany(mappedBy = "bike", fetch = FetchType.EAGER)
     private List<Journey> journeys = new ArrayList<>();
@@ -29,7 +29,7 @@ public class Bike implements Serializable {
     private Station currentStation;
 
     @ManyToOne
-    @JoinColumn(name = "previous_station", referencedColumnName = "station_id")
+    @JoinColumn(name = "previous_station")
     private Station previousStation;
 
     @Transient
@@ -44,19 +44,19 @@ public class Bike implements Serializable {
     }
 
     public Bike(Long id, Station currentStation) {
-        this.bikeId = id;
+        this.id = id;
         this.currentStation = currentStation;
         departedOutsideTopFive = false;
         status = BikeStatus.DOCKED;
     }
 
-    //Check for bikeId match
+    //Check for id match
     @Override
     public boolean equals(Object object) {
         boolean isEqual = false;
 
         if (object != null && object instanceof Bike) {
-            isEqual = (this.bikeId.equals(((Bike) object).bikeId));
+            isEqual = (this.id.equals(((Bike) object).id));
         }
 
         return isEqual;
@@ -65,23 +65,23 @@ public class Bike implements Serializable {
     @Override
     public int hashCode() {
         int result = 17;
-        result = 31 * result + Long.hashCode(bikeId);
+        result = 31 * result + Long.hashCode(id);
         return result;
-        //return Objects.hash(bikeId);
+        //return Objects.hash(id);
     }
 
     @Override
     public String toString() {
-        return "Bike " + bikeId;
+        return "Bike " + id;
     }
 
-    public Long getBikeId() {
-        return bikeId;
+    public Long getId() {
+        return id;
     }
 
     @XmlAttribute(name = "number")
-    private void setBikeId(Long bikeId) {
-        this.bikeId = bikeId;
+    private void setId(Long id) {
+        this.id = id;
     }
 
     public Station getCurrentStation() {

@@ -35,8 +35,8 @@ public class JourneyService {
 
     public JourneyDto findByIdDto(long id) {
         Journey journey = findById(id);
-        return new JourneyDto(journey.getJourneyId(), journey.getBike().getBikeId(),
-                journey.getStartStation().getStationId(), journey.getEndStation().getStationId(),
+        return new JourneyDto(journey.getId(), journey.getBike().getId(),
+                journey.getStartStation().getId(), journey.getEndStation().getId(),
                 journey.getStartStation().getStationName(), journey.getEndStation().getStationName(),
                 journey.getDuration(), journey.getArrivalTime(), journey.isOutsideTopFive());
     }
@@ -65,11 +65,15 @@ public class JourneyService {
         return modelToDto(journeyRepository.findBetweenDate(start, end));
     }
 
+    public List<JourneyDto> findByBike(long id) {
+        return modelToDto(journeyRepository.findByBike(id));
+    }
+
     private List<JourneyDto> modelToDto(List<Journey> journeys) {
         List<JourneyDto> journeyDtos = new ArrayList<>();
         for (Journey journey : journeys) {
-            journeyDtos.add(new JourneyDto(journey.getJourneyId(), journey.getBike().getBikeId(),
-                    journey.getStartStation().getStationId(), journey.getEndStation().getStationId(),
+            journeyDtos.add(new JourneyDto(journey.getId(), journey.getBike().getId(),
+                    journey.getStartStation().getId(), journey.getEndStation().getId(),
                     journey.getStartStation().getStationName(), journey.getEndStation().getStationName(),
                     journey.getDuration(), journey.getArrivalTime(), journey.isOutsideTopFive()));
         }

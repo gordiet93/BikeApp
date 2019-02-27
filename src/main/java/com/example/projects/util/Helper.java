@@ -53,31 +53,6 @@ public class Helper {
         return (Markers) unmarshaller.unmarshal(file);
     }
 
-    public static ArrayList<Long> getDataBikeIds() {
-        ArrayList<Long> bikeIds = new ArrayList<>();
-        try {
-            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document document = dBuilder.parse(BELFAST_BIKES_URL);
-            document.getDocumentElement().normalize();
-
-            NodeList nodeList = document.getElementsByTagName("bike");
-
-            for (int i = 0; i < nodeList.getLength(); i++) {
-                Node node = nodeList.item(i);
-
-                if (node.getNodeType() == Node.ELEMENT_NODE) {
-                    Element element = (Element) node;
-                    bikeIds.add(Long.parseLong(element.getAttribute("number")));
-                }
-            }
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-
-        return bikeIds;
-    }
-
     public static int calDurationInMinutes(long time) {
         //long seconds = time / 1000 % 60;
         return (int) Math.ceil(time / (60 * 1000) % 60);
